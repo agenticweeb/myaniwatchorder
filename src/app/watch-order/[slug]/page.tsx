@@ -162,13 +162,17 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
   };
 
   // Tells Google which image to prefer for search-result thumbnails
+  // (ogImageUrl lives in generateMetadata scope — rebuild it here with
+  // the same construction, using the franchise's coverImage)
+  const schemaCoverParam = franchise.coverImage ? `&cover=${encodeURIComponent(franchise.coverImage)}` : "";
+  const schemaImageUrl = `${siteUrl}/api/og?franchise=${encodeURIComponent(franchise.name)}&entries=0&hours=0&tier=Essential${schemaCoverParam}`;
   const imageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "url": canonicalUrl,
     "primaryImageOfPage": {
       "@type": "ImageObject",
-      "url": ogImageUrl,
+      "url": schemaImageUrl,
       "width": 1200,
       "height": 630,
     },
