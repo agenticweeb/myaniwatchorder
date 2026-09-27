@@ -9,7 +9,10 @@ import FlowchartV2 from "@/components/FlowchartV2";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Compass } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// ISR: page renders at build time (or first request), then re-renders
+// at most every 6 hours. Googlebot gets instant HTML from the cache.
+// The action's internal Redis cache (7-day TTL) handles data freshness.
+export const revalidate = 21600;
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
