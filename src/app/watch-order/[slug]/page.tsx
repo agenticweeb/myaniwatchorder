@@ -168,7 +168,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
   // (ogImageUrl lives in generateMetadata scope — rebuild it here with
   // the same construction, using the franchise's coverImage)
   const schemaCoverParam = franchise.coverImage ? `&cover=${encodeURIComponent(franchise.coverImage)}` : "";
-  const schemaImageUrl = `${siteUrl}/api/og?franchise=${encodeURIComponent(franchise.name)}&entries=0&hours=0&tier=Essential${schemaCoverParam}`;
+  const schemaImageUrl = `${siteUrl}/api/og?franchise=${encodeURIComponent(franchise.name)}&entries=${result.totalEntries}&hours=${Math.round(result.totalDurationMinutes / 60)}&tier=Essential${schemaCoverParam}`;
   const imageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",

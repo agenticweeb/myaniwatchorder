@@ -6,7 +6,6 @@ import { getCurrentSeasonSlug, getPreviousSeasonSlug } from '@/lib/anilist/get-s
 // Revalidate every hour — reads fresh Redis data (airing titles) without a deploy.
 // Without this, Next treats the sitemap as static and freezes it at build time.
 export const revalidate = 3600;
-export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://aniwatchorder.cc';
@@ -59,35 +58,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 4. Airing + trending deep-links — from Redis (written by the
-  //    refresh-airing-sitemap cron). One entry per currently-airing or
-  //    trending show this season. Falls back to empty if cron hasn't run.
-  let airingEntries: MetadataRoute.Sitemap = [];
-  try {
-    const raw = await redis.get('sitemap:airing-titles');
-    console.log('[sitemap] Redis raw type:', typeof raw, '| value preview:', JSON.stringify(raw)?.slice(0, 100));
-
-    // The Upstash SDK may auto-deserialize on read — handle BOTH shapes:
-    // a raw JSON string (needs parsing) or an already-parsed array
-    let titles: string[] = [];
-    if (typeof raw === 'string') {
-      titles = JSON.parse(raw);
-    } else if (Array.isArray(raw)) {
-      titles = raw as string[];
-    }
-
-    console.log('[sitemap] Airing titles found:', titles.length);
-
-    airingEntries = titles.map(title => ({
-      url: `${baseUrl}/?q=${encodeURIComponent(title)}`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.6,
-    }));
-  } catch (e) {
-    console.error('[sitemap] Redis read failed:', e);
-    // Redis unavailable — sitemap still serves the static + franchise + season entries
-  }
+  // 4. Airing titles — REMOVED from sitemap as ?q= deep-links (parameterized
+  //    URLs are non-canonical, read as thin/duplicate content per Google's
+  //    sitemap guidelines). The airing shows are captured on the SEASON PAGE,
+  //    which IS a proper canonical URL with real content. The cron still
+  //    writes to Redis for the season page's reference — the sitemap simply
+  //    doesn't emit individual ?q= entries anymore.
+  // 
+  // If we want airing shows as individual indexed URLs later, the correct
+  // approach is dedicated content pages (/anime/<slug>), not query params.
 
   return [...staticPages, ...franchisePages, ...seasonPages, ...airingEntries];
 }
