@@ -68,5 +68,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // If we want airing shows as individual indexed URLs later, the correct
   // approach is dedicated content pages (/anime/<slug>), not query params.
 
-  return [...staticPages, ...franchisePages, ...seasonPages, ...airingEntries];
+  return [...staticPages, ...franchisePages, ...seasonPages];
 }
