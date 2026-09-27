@@ -20,7 +20,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://myaniwatchorder-zeta.vercel.app";
   const canonicalUrl = `${siteUrl}/watch-order/${franchise.slug}`;
 
-  const ogImageUrl = `${siteUrl}/api/og?franchise=${encodeURIComponent(franchise.name)}&entries=0&hours=0&tier=Essential`;
+  // OG card with cover art overlay — content-relevant image for Google's
+  // search-result thumbnail selection. Falls back to branded card if no cover.
+  const ogCoverParam = franchise.coverImage ? `&cover=${encodeURIComponent(franchise.coverImage)}` : "";
+  const ogImageUrl = `${siteUrl}/api/og?franchise=${encodeURIComponent(franchise.name)}&entries=0&hours=0&tier=Essential${ogCoverParam}`;
 
   return {
     title: franchise.h1,
@@ -158,6 +161,18 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
     ]
   };
 
+  // Tells Google which image to prefer for search-result thumbnails
+  const imageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "url": canonicalUrl,
+    "primaryImageOfPage": {
+      "@type": "ImageObject",
+      "url": ogImageUrl,
+      "width": 1200,
+      "height": 630,
+    },
+  };
   return (
     <main className="min-h-dvh relative flex flex-col">
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-chrono-border/20">
@@ -177,6 +192,10 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(imageSchema) }}
         />
 
         <div className="mb-8 text-center">
