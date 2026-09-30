@@ -164,14 +164,23 @@ export default function FlowchartV2({
   const [activeTrailerUrl, setActiveTrailerUrl] = useState<string | null>(
     null
   );
-  const [visibleTiers, setVisibleTiers] = useState<Set<string>>(new Set(["essential"]));
+  // Show ALL tiers by default — the "Smart Windowing" (initial 6 entries
+  // + "Show full path") handles progressive disclosure instead. The old
+  // essential-only default hid most of the timeline and the tier toggles
+  // read as "remove" filters when they should reveal.
+  const [visibleTiers, setVisibleTiers] = useState<Set<string>>(
+    new Set(["essential", "recommended", "optional", "skip"])
+  );
 
   const toggleTier = (tier: string) => {
     setVisibleTiers((prev) => {
       const next = new Set(prev);
       if (next.has(tier)) next.delete(tier);
       else next.add(tier);
-      if (next.size === 0) return new Set(["essential"]);
+      // Safety: never hide ALL tiers — reset to full view instead of empty
+      if (next.size === 0) {
+        return new Set(["essential", "recommended", "optional", "skip"]);
+      }
       return next;
     });
   };
@@ -621,18 +630,18 @@ export default function FlowchartV2({
         <div className="space-y-3">
           {/* Tier Disclosure Controls */}
           <div className="flex flex-wrap gap-2 items-center justify-center mb-4">
-            <span className="text-xs text-chrono-text-dim font-bold uppercase tracking-wider mr-2">Show:</span>
+            <span className="text-xs text-chrono-text-dim font-bold uppercase tracking-wider mr-2">Showing:</span>
             <button onClick={() => toggleTier("essential")} className={cn("px-3 py-1 text-xs rounded-full border cursor-pointer transition-all", visibleTiers.has("essential") ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300" : "bg-black/10 border-chrono-border text-chrono-text-dim")}>
               Essential
             </button>
             <button onClick={() => toggleTier("recommended")} className={cn("px-3 py-1 text-xs rounded-full border cursor-pointer transition-all", visibleTiers.has("recommended") ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "bg-black/10 border-chrono-border text-chrono-text-dim")}>
-              + Recommended
+              Recommended
             </button>
             <button onClick={() => toggleTier("optional")} className={cn("px-3 py-1 text-xs rounded-full border cursor-pointer transition-all", visibleTiers.has("optional") ? "bg-amber-500/20 border-amber-500/50 text-amber-300" : "bg-black/10 border-chrono-border text-chrono-text-dim")}>
-              + Optional
+              Optional
             </button>
             <button onClick={() => toggleTier("skip")} className={cn("px-3 py-1 text-xs rounded-full border cursor-pointer transition-all", visibleTiers.has("skip") ? "bg-zinc-700/40 border-zinc-600 text-zinc-400" : "bg-black/10 border-chrono-border text-chrono-text-dim")}>
-              + Skip
+              Skip
             </button>
           </div>
 
