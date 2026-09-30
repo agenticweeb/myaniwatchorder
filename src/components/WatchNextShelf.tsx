@@ -130,3 +130,4 @@ export function WatchNextShelf({ sourceAnilistId, sourceTitle }: Props) {
       </p>
     </section>
   );
+}

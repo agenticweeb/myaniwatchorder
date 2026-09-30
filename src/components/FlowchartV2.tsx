@@ -206,9 +206,6 @@ export default function FlowchartV2({
   const firstEntryWithImage = activePath?.groups
     ?.flatMap((g) => g.entries)
     .find((e) => e.imageUrl || e.coverImage?.large || e.coverImage?.medium);
-  const firstEntryWithImage = activePath?.groups
-    ?.flatMap((g) => g.entries)
-    .find((e) => e.imageUrl || e.coverImage?.large || e.coverImage?.medium);
   const heroImage =
     data.franchiseImage ||
     firstEntryWithImage?.imageUrl ||
