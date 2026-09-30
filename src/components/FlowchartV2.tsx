@@ -1,4 +1,5 @@
 "use client";
+import { WatchNextShelf } from "@/components/WatchNextShelf";
 import { groupByHeuristic } from "@/lib/grouping/heuristic-grouper";
 import { CollapsibleArc } from "@/components/CollapsibleArc";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -201,10 +202,16 @@ export default function FlowchartV2({
   const activePath =
     data.paths.find((p) => p.id === activePathId) || data.paths[0];
 
+  // Fallback chain: franchiseImage → first entry with ANY image →
+  // first entry's coverImage at ANY depth → empty (graceful degradation)
+  const firstEntryWithImage = activePath?.groups
+    ?.flatMap((g) => g.entries)
+    .find((e) => e.imageUrl || e.coverImage?.large || e.coverImage?.medium);
   const heroImage =
     data.franchiseImage ||
-    activePath?.groups?.[0]?.entries?.[0]?.imageUrl ||
-    activePath?.groups?.[0]?.entries?.[0]?.coverImage?.large ||
+    firstEntryWithImage?.imageUrl ||
+    firstEntryWithImage?.coverImage?.large ||
+    firstEntryWithImage?.coverImage?.medium ||
     "";
 
   const pathEntries =
@@ -1026,6 +1033,13 @@ const arcGroups = groupByHeuristic(windowedEntries, rootAnilistId);
           currentDNA={computeDNA(data)} 
           currentName={data.franchise} 
           currentSlug={(data as any).franchiseId?.replace('fr_', '')} 
+        />
+      )}
+      {/* Watch Next — community recommendations for this franchise */}
+      {data.allEntriesFlat?.[0]?.anilistId && (
+        <WatchNextShelf
+          sourceAnilistId={data.allEntriesFlat[0].anilistId}
+          sourceTitle={data.franchise}
         />
       )}
 

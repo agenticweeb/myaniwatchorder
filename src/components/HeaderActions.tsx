@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { AuthModal } from './AuthModal';
-import { Compass, LogIn, LogOut, Menu, X, User, Share2 } from 'lucide-react';
+import { Compass, LogIn, LogOut, Menu, X, User, UserPlus, Share2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 
 // ── Social icon components (shared by desktop dropdown + mobile menu) ──
@@ -214,10 +214,10 @@ export function HeaderActions() {
         ) : (
           <button
             onClick={() => setIsAuthOpen(true)}
-            className="flex items-center gap-2 text-xs font-semibold text-white bg-chrono-primary px-3 py-1.5 rounded-full hover:bg-chrono-primary/90 transition-colors"
+            className="flex items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-chrono-primary to-fuchsia-600 px-4 py-1.5 rounded-full hover:from-chrono-primary/90 hover:to-fuchsia-600/90 transition-all shadow-lg shadow-chrono-primary/25"
           >
-            <LogIn className="w-4 h-4" />
-            <span className="hidden sm:inline">Login</span>
+            <UserPlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Sign Up Free</span>
           </button>
         )}
       </div>
@@ -235,10 +235,10 @@ export function HeaderActions() {
         ) : (
           <button
             onClick={() => setIsAuthOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-bold text-white bg-chrono-primary px-3 py-2 rounded-full hover:bg-chrono-primary/90 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-chrono-primary to-fuchsia-600 px-3.5 py-2 rounded-full transition-all"
           >
-            <LogIn className="w-4 h-4" />
-            <span>Login</span>
+            <UserPlus className="w-4 h-4" />
+            <span>Sign Up</span>
           </button>
         )}
         <button

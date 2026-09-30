@@ -17,7 +17,9 @@ type OAuthProvider = "google" | "discord";
 export function AuthModal({ isOpen, onClose, redirectTo = "/" }: AuthModalProps) {
   const emailFieldId = useId();
   const passwordFieldId = useId();
-  const [mode, setMode] = useState<Mode>("login");
+  // Default to SIGNUP — "Login" as the header button label was misleading
+  // (new visitors thought they needed an existing account and skipped it)
+  const [mode, setMode] = useState<Mode>("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -156,7 +158,7 @@ export function AuthModal({ isOpen, onClose, redirectTo = "/" }: AuthModalProps)
               <p className="text-xs text-zinc-400 mt-1">
                 {mode === "login"
                   ? "Welcome back. Sign in to sync your progress."
-                  : "Create an account to sync your watch progress."}
+                  : "Free forever. Sync your watch progress across devices, get personalized recommendations, and never lose your timeline."}
               </p>
             </div>
             <button
