@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import TrailerButton from "@/components/TrailerButton";
 import { FranchisePulse } from "@/components/FranchisePulse";
 import { AiringCountdown } from "@/components/AiringCountdown";
-import { BeyondHorizon } from "@/components/BeyondHorizon";
 import { FlagTooltip } from "@/components/FlagTooltip";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -204,6 +203,9 @@ export default function FlowchartV2({
 
   // Fallback chain: franchiseImage → first entry with ANY image →
   // first entry's coverImage at ANY depth → empty (graceful degradation)
+  const firstEntryWithImage = activePath?.groups
+    ?.flatMap((g) => g.entries)
+    .find((e) => e.imageUrl || e.coverImage?.large || e.coverImage?.medium);
   const firstEntryWithImage = activePath?.groups
     ?.flatMap((g) => g.entries)
     .find((e) => e.imageUrl || e.coverImage?.large || e.coverImage?.medium);
@@ -565,11 +567,51 @@ export default function FlowchartV2({
         </div>
       </div>
 
-      {/* Time experience for active path */}
-      <TimeBudgetCard data={timeData} preferredPaceLabel={customSchedule?.enabled ? "Custom" : preferredPace} />
+      {/* Time experience — collapsed by default (was consuming too much vertical space) */}
+      <details className="group mt-4">
+        <summary className="flex items-center justify-between cursor-pointer glass-card rounded-2xl border border-chrono-border/20 px-5 py-4 hover:border-chrono-primary/30 transition-all list-none">
+          <div className="flex items-center gap-3">
+            <Clock className="w-4 h-4 text-chrono-primary" />
+            <span className="text-sm font-bold text-white">
+              Time Experience
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-chrono-text-dim font-medium">
+              {timeData?.totalEpisodes || 0} eps · {timeData?.paces?.find(p => p.label === (customSchedule?.enabled ? "Custom" : preferredPace))?.durationShort || timeData?.paces?.[1]?.durationShort || "—"}
+            </span>
+            <ChevronDown className="w-4 h-4 text-chrono-text-dim transition-transform group-open:rotate-180" />
+          </div>
+        </summary>
+        <div className="mt-3">
+          <TimeBudgetCard data={timeData} preferredPaceLabel={customSchedule?.enabled ? "Custom" : preferredPace} />
+        </div>
+      </details>
 
-      {/* Franchise DNA - Structural Complexity Report */}
-      <FranchiseDNA dna={computeDNA(data)} franchiseName={data.franchise} />
+      {/* Franchise DNA — collapsed by default, teaser in the summary */}
+      <details className="group mt-4">
+        <summary className="flex items-center justify-between cursor-pointer glass-card rounded-2xl border border-chrono-border/20 px-5 py-4 hover:border-chrono-primary/30 transition-all list-none">
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-4 h-4 text-chrono-primary" />
+            <span className="text-sm font-bold text-white">
+              Complexity Report
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-chrono-text-dim font-medium">
+              {(() => {
+                const dna = computeDNA(data);
+                const avg = Math.round((dna.nonLinearity + dna.sequelDepth + dna.branchFactor) / 3);
+                return `${avg}/10 complexity`;
+              })()}
+            </span>
+            <ChevronDown className="w-4 h-4 text-chrono-text-dim transition-transform group-open:rotate-180" />
+          </div>
+        </summary>
+        <div className="mt-3">
+          <FranchiseDNA dna={computeDNA(data)} franchiseName={data.franchise} />
+        </div>
+      </details>
 
       {/* Shareable Card Integration */}
       <ShareCard result={data} />
@@ -1027,15 +1069,7 @@ const arcGroups = groupByHeuristic(windowedEntries, rootAnilistId);
         </div>,
         document.body
       )}
-      {/* BEYOND HORIZON - RECOMMENDATIONS (Hidden for standalone movies) */}
-      {data.classification !== "single_core" && (
-        <BeyondHorizon 
-          currentDNA={computeDNA(data)} 
-          currentName={data.franchise} 
-          currentSlug={(data as any).franchiseId?.replace('fr_', '')} 
-        />
-      )}
-      {/* Watch Next — community recommendations for this franchise */}
+      {/* Watch Next — community recommendations (replaced BeyondHorizon) */}
       {data.allEntriesFlat?.[0]?.anilistId && (
         <WatchNextShelf
           sourceAnilistId={data.allEntriesFlat[0].anilistId}
