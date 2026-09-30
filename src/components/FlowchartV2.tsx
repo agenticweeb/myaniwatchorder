@@ -1,4 +1,5 @@
 "use client";
+import { SEO_FRANCHISES as SEO_FRANCHISES_STATIC } from "@/lib/seo/franchises";
 import { WatchNextShelf } from "@/components/WatchNextShelf";
 import { groupByHeuristic } from "@/lib/grouping/heuristic-grouper";
 import { CollapsibleArc } from "@/components/CollapsibleArc";
@@ -276,11 +277,20 @@ export default function FlowchartV2({
   };
 
   const handleShare = async () => {
-    const url = window.location.href;
+    // Share the SEO slug page if one exists (has og:image for the link
+    // thumbnail). For non-SEO franchises, the current URL deep-links via ?id.
+    const firstEntryId = data.allEntriesFlat?.[0]?.anilistId;
+    const seoMatch = firstEntryId
+      ? SEO_FRANCHISES_STATIC.find((f) => f.anilistId === firstEntryId)
+      : undefined;
+    const shareUrl = seoMatch
+      ? `https://aniwatchorder.cc/watch-order/${seoMatch.slug}`
+      : window.location.href;
+
     const shareData = {
       title: `MyAniWatchOrder - ${data.franchise} Watch Order`,
       text: `Check out my watch order for ${data.franchise} on MyAniWatchOrder!`,
-      url: url,
+      url: shareUrl,
     };
     
     if (navigator.share) {
@@ -296,7 +306,16 @@ export default function FlowchartV2({
   };
 
   const shareToPlatform = (platform: string) => {
-    const url = window.location.href;
+    // Match handleShare's URL — SEO slug when available, current URL otherwise.
+    // (Synchronous version — can't dynamic-import here, so derive the slug
+    // the same way the deep-link flow does and check against the known list)
+    const firstEntryId = data.allEntriesFlat?.[0]?.anilistId;
+    const seoMatch = firstEntryId
+      ? SEO_FRANCHISES_STATIC.find((f) => f.anilistId === firstEntryId)
+      : undefined;
+    const url = seoMatch
+      ? `https://aniwatchorder.cc/watch-order/${seoMatch.slug}`
+      : window.location.href;
     const title = `MyAniWatchOrder - ${data.franchise} Watch Order`;
     let shareUrl = '';
     
@@ -323,7 +342,15 @@ export default function FlowchartV2({
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    // Same URL logic as the other share functions
+    const firstEntryId = data.allEntriesFlat?.[0]?.anilistId;
+    const seoMatch = firstEntryId
+      ? SEO_FRANCHISES_STATIC.find((f) => f.anilistId === firstEntryId)
+      : undefined;
+    const url = seoMatch
+      ? `https://aniwatchorder.cc/watch-order/${seoMatch.slug}`
+      : window.location.href;
+    navigator.clipboard.writeText(url);
     setLinkCopied(true);
     setTimeout(() => {
       setLinkCopied(false);
