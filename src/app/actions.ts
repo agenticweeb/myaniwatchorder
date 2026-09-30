@@ -414,7 +414,24 @@ export async function generateWatchOrderAction(
       /* ledger is analytics — never break generation */
     }
 
-    await redis.set(cacheKey, { result: result.result, provider: result.provider, latency: result.latency }, { ex: 604800 });
+    // ENRICHMENT QUALITY GATE: results with missing images are cached
+    // SHORT (1h) so they self-heal when AniList is responsive again.
+    // Fully enriched results get the full 7-day cache.
+    const totalEntries = result.result.allEntriesFlat?.length || 0;
+    const entriesWithImages = result.result.allEntriesFlat?.filter(
+      (e: any) => e.imageUrl || e.coverImage?.large
+    ).length || 0;
+    const enrichmentRate = totalEntries > 0 ? entriesWithImages / totalEntries : 0;
+
+    const cacheTtl = enrichmentRate < 0.5 ? 3600 : 604800;
+
+    if (enrichmentRate < 0.5) {
+      console.warn(
+        `⚠️ Low enrichment for ${validated.animeName}: ${entriesWithImages}/${totalEntries} entries have images — caching 1h for self-heal`
+      );
+    }
+
+    await redis.set(cacheKey, { result: result.result, provider: result.provider, latency: result.latency }, { ex: cacheTtl });
 
     return {
       success: true,
