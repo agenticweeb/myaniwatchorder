@@ -1093,11 +1093,17 @@ const arcGroups = groupByHeuristic(windowedEntries, rootAnilistId);
         </div>,
         document.body
       )}
-      {/* Watch Next — community recommendations (replaced BeyondHorizon) */}
+      {/* Because you generated [franchise] — the Discover-quality
+          recommendation shelf, mounted below the watch order */}
       {data.allEntriesFlat?.[0]?.anilistId && (
         <WatchNextShelf
           sourceAnilistId={data.allEntriesFlat[0].anilistId}
           sourceTitle={data.franchise}
+          onSelect={(card) => {
+            // Same flow as Discover: clicking a card deep-links to that
+            // franchise's watch order generation
+            window.location.href = `/?q=${encodeURIComponent(card.title)}`;
+          }}
         />
       )}
 
