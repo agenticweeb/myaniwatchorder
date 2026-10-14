@@ -10,20 +10,20 @@ const STEPS = [
   {
     icon: Search,
     step: "01",
-    title: "Search any anime",
-    desc: "Type any title — from this season's hits to 40-year-old franchises. The full relation graph is pulled live from AniList: sequels, movies, OVAs, spin-offs, alternate timelines.",
+    title: "Name the universe",
+    desc: "Search anything from a seasonal hit to a 40-year-old franchise. We map the live AniList relationship graph — sequels, movies, OVAs, spin-offs, and alternate routes — before recommending a single step.",
   },
   {
     icon: Route,
     step: "02",
-    title: "Get a spoiler-safe path",
-    desc: "Every entry is sequenced into an optimal order and tiered — Must Watch, Recommended, Optional, Skip — so reveals land right and filler never wastes your time.",
+    title: "See the route, not the noise",
+    desc: "The engine turns the graph into a spoiler-safe path and explains every tier: Essential, Recommended, Optional, or Skip. The AI can arrange and explain verified entries, not invent a fake show list.",
   },
   {
     icon: CheckCircle2,
     step: "03",
-    title: "Track progress, finish strong",
-    desc: "Check off episodes as you go — progress is saved right in your browser. Finish-date estimates update live with every pace, from Casual to Binge.",
+    title: "Watch with momentum",
+    desc: "Check off entries as you go, see what is next, calculate a realistic finish date, and export a schedule. Create an account only when you want your journey synced across devices.",
   },
 ] as const;
 
@@ -35,10 +35,10 @@ export function HowItWorks() {
           How it works
         </span>
         <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-          From &ldquo;where do I even start?&rdquo; to your first episode
+          Find the right route. Skip the noise.
         </h2>
         <p className="mt-3 text-sm text-chrono-text-dim">
-          Three steps. No account required. Every path is grounded in verified AniList data — never invented.
+          Built for the moment every anime fan knows: too many seasons, too many movies, and five different answers online.
         </p>
       </div>
 

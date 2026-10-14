@@ -1,0 +1,1 @@
+{"routes":[{"path":"/","title":"Anime Watch Order Finder"},{"path":"/about","title":"About MyAniWatchOrder"},{"path":"/account","title":"Your Anime Journey"},{"path":"/privacy","title":"Privacy Policy"},{"path":"/terms","title":"Terms of Service"},{"path":"/season/:slug","title":"Season Anime Watch Orders"},{"path":"/watch-order/:slug","title":"Anime Watch Order"}]}

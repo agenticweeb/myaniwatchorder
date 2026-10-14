@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ProgressSync } from "@/components/ProgressSync";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -125,7 +126,10 @@ export default function RootLayout({
         
         <div className="relative z-10">
           <NuqsAdapter>
-            <Providers>{children}</Providers>
+            <Providers>
+              <ProgressSync />
+              {children}
+            </Providers>
           </NuqsAdapter>
         </div>
         
