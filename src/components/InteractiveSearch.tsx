@@ -47,6 +47,7 @@ import { AiringCarousel } from "@/components/AiringCarousel";
 import { DiscoverShelves } from "@/components/DiscoverShelves";
 import { CinematicHero } from "@/components/CinematicHero";
 import { ComingSoon } from "@/components/ComingSoon";
+import { HomepageDiscovery } from "@/components/HomepageDiscovery";
 import type { DiscoverCardData } from "@/lib/discover/shelf-recipes";
 
 
@@ -1110,6 +1111,14 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
             <ChevronRight className="w-5 h-5 text-chrono-text-dim shrink-0" />
           </button>
         </div>
+      )}
+
+      {activeTab === "builder" && !selected && !finalData && (
+        <HomepageDiscovery
+          items={initialSuggestions}
+          onSelect={handleSelectSuggestion}
+          onOpenLibrary={() => handleTabSwitch("discover")}
+        />
       )}
 
       {/* Currently Airing Carousel */}
