@@ -209,10 +209,13 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
   const [discoverLayout, setDiscoverLayout] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState<"popularity" | "score" | "title" | "underrated">("popularity");
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [includedTags, setIncludedTags] = useState<string[]>([]);
+  const [maxEpisodes, setMaxEpisodes] = useState<number | undefined>(undefined);
   const [minRating, setMinRating] = useState<number>(0);
   const [selectedYear, setSelectedYear] = useState<string>("All Time");
   const [selectedLang, setSelectedYearLang] = useState<string>("All");
   const [showFilters, setShowFilters] = useState(true);
+  const [vibeInterpretation, setVibeInterpretation] = useState("");
 
   // Phase 2 — slop mutes (single source of truth; tag/genre split derived below)
   const [slopFilters, setSlopFilters] = useState<string[]>([]);
@@ -273,10 +276,12 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
     isError: discoverIsError,
     refetch: discoverRefetch,
   } = useAniListInfiniteQuery<AnimeSearchResult>(
-    ["discover_v6", selectedGenres, minRating, selectedYear, sortBy, selectedLang, slopFilters],
+    ["discover_v8", selectedGenres, includedTags, maxEpisodes, minRating, selectedYear, sortBy, selectedLang, slopFilters],
     (page) => discoverAnimeAction(
       {
         genres: selectedGenres,
+        includedTags,
+        maxEpisodes,
         excludedTags,
         excludedGenres,
         minRating,
@@ -302,22 +307,89 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
   const handleVibeSearch = (prompt: string) => {
     const value = prompt.toLowerCase();
     const genres = new Set<string>();
-    if (/dark|grim|disturbing|horror/.test(value)) genres.add("Horror");
-    if (/mystery|detective|puzzle/.test(value)) genres.add("Mystery");
-    if (/psychological|mind[- ]?bending|deep/.test(value)) genres.add("Psychological");
-    if (/sci[- ]?fi|space|future/.test(value)) genres.add("Sci-Fi");
-    if (/mecha|robot/.test(value)) genres.add("Mecha");
-    if (/romance|romantic|love/.test(value)) genres.add("Romance");
-    if (/sports|sport/.test(value)) genres.add("Sports");
-    if (/fantasy|magic/.test(value)) genres.add("Fantasy");
-    if (genres.size) setSelectedGenres([...genres]);
-    if (/highly rated|well rated|top rated|masterpiece|excellent/.test(value)) setMinRating(8);
+    let interpretation = "Popular anime, with the advanced filters ready to refine further";
+    setMaxEpisodes(undefined);
+    setMinRating(0);
+    setSelectedYear("All Time");
+    if (/villain|bad guy|evil protagonist|antagonist|anti[- ]?hero|morally grey|morally gray/.test(value)) {
+      // AniList's useful indexed concept here is Anti-Hero; “Villain” is not
+      // consistently populated as an anime tag, so do not query it directly.
+      setIncludedTags(["Anti-Hero"]);
+      interpretation = "Villain-like and antihero protagonists → AniList Anti-Hero tag";
+    } else if (/dark|grim|disturbing|horror/.test(value)) {
+      genres.add("Horror");
+      setIncludedTags([]);
+      interpretation = "Dark stories → Horror routes";
+    } else if (/mystery|detective|puzzle/.test(value)) {
+      genres.add("Mystery");
+      setIncludedTags([]);
+      interpretation = "Mystery-driven stories → Mystery routes";
+    } else if (/psychological|mind[- ]?bending|deep/.test(value)) {
+      genres.add("Psychological");
+      setIncludedTags(["Psychological"]);
+      interpretation = "Mind-bending stories → Psychological routes";
+    } else if (/sci[- ]?fi|space|future/.test(value)) {
+      genres.add("Sci-Fi");
+      setIncludedTags([]);
+      interpretation = "Science-fiction stories → Sci-Fi routes";
+    } else if (/mecha|robot/.test(value)) {
+      genres.add("Mecha");
+      setIncludedTags([]);
+      interpretation = "Robot and mecha stories → Mecha routes";
+    } else if (/romance|romantic|love/.test(value)) {
+      genres.add("Romance");
+      setIncludedTags([]);
+      interpretation = "Romance-led stories → Romance routes";
+    } else if (/sports|sport/.test(value)) {
+      genres.add("Sports");
+      setIncludedTags([]);
+      interpretation = "Sports anime → Sports routes";
+    } else if (/fantasy|magic/.test(value)) {
+      genres.add("Fantasy");
+      setIncludedTags([]);
+      interpretation = "Fantasy and magic stories → Fantasy routes";
+    } else {
+      setIncludedTags([]);
+    }
+    setSelectedGenres([...genres]);
+    if (/female lead|female protagonist|woman lead|women lead/.test(value)) {
+      setIncludedTags(["Female Protagonist"]);
+      interpretation += " · Female Protagonist tag";
+    } else if (/male lead|male protagonist|man lead/.test(value)) {
+      setIncludedTags(["Male Protagonist"]);
+      interpretation += " · Male Protagonist tag";
+    }
+    if (/revenge|vengeance|avenging/.test(value)) {
+      setIncludedTags(["Revenge"]);
+      interpretation += " · Revenge tag";
+    }
+    if (/time travel|time loop|timeline/.test(value)) {
+      setIncludedTags(["Time Travel"]);
+      interpretation += " · Time Travel tag";
+    }
+    if (/short|quick|under 26|one cour/.test(value)) {
+      setMaxEpisodes(26);
+      interpretation += " · at most 26 episodes";
+    }
+    if (/very short|mini|under 13/.test(value)) {
+      setMaxEpisodes(13);
+      interpretation += " · at most 13 episodes";
+    }
+    if (/highly rated|well rated|top rated|masterpiece|excellent/.test(value)) {
+      setMinRating(8);
+      interpretation += " · 8/10 minimum";
+    }
     const era = value.match(/(1990s|2000s|2010s|2020s)/)?.[1];
-    if (era) setSelectedYear(era);
+    if (era) {
+      setSelectedYear(era);
+      interpretation += ` · ${era}`;
+    }
     const muted = EXCLUDE_OPTIONS.filter((option) => value.includes(option.name.toLowerCase()));
     if (muted.length) setSlopFilters((previous) => [...new Set([...previous, ...muted.map((option) => option.name)])]);
+    setVibeInterpretation(interpretation);
     setShowFilters(true);
     if (activeTab !== "discover") handleTabSwitch("discover");
+    window.setTimeout(() => document.querySelector("[data-vibe-results]")?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
   };
 
   // Infinite-scroll sentinel — fetches BEFORE the user reaches the bottom
@@ -719,7 +791,7 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
               : "hidden"
           )}
         >
-          <VibeSearch onApply={handleVibeSearch} />
+          <VibeSearch onApply={handleVibeSearch} interpretation={vibeInterpretation} />
 
           {/* Zone 1 — Curated shelves (identical for every visitor; ignore the filter bar) */}
           <DiscoverShelves onSelect={handleSelectDiscoverCard} />
@@ -927,7 +999,7 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
           </AnimatePresence>
 
           {/* Dynamic Results Grid (FIXED: removed nested grids to prevent layout collapse) */}
-          <div className={cn(
+          <div data-vibe-results className={cn(
             discoverLayout === "grid" ? "grid grid-cols-1 md:grid-cols-3 gap-4" : "space-y-2",
             discoverLoading && !discoverFetchingMore && discoverList.length > 0 && "opacity-50 pointer-events-none transition-opacity duration-200"
           )}>
