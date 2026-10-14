@@ -46,8 +46,8 @@ import { PipelineLoader } from "@/components/PipelineLoader";
 import { AiringCarousel } from "@/components/AiringCarousel";
 import { DiscoverShelves } from "@/components/DiscoverShelves";
 import { CinematicHero } from "@/components/CinematicHero";
-import { ComingSoon } from "@/components/ComingSoon";
 import { HomepageDiscovery } from "@/components/HomepageDiscovery";
+import { DiscoveryFeedback } from "@/components/DiscoveryFeedback";
 import type { DiscoverCardData } from "@/lib/discover/shelf-recipes";
 
 
@@ -700,8 +700,13 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
           {/* Zone 1 — Curated shelves (identical for every visitor; ignore the filter bar) */}
           <DiscoverShelves onSelect={handleSelectDiscoverCard} />
 
-          {/* Coming Soon — roadmap strip (static, visible immediately — its whole point) */}
-          <ComingSoon />
+          <DiscoveryFeedback
+            onChoose={(message) => {
+              setFeedbackType("suggestion");
+              setFeedbackMsg(message);
+              setFeedbackOpen(true);
+            }}
+          />
           {/* CTA: Direct users to the filter section */}
           <div className="relative overflow-hidden rounded-2xl border border-chrono-primary/30 bg-gradient-to-r from-chrono-primary/10 to-fuchsia-600/10 p-5 sm:p-6">
             <div className="flex items-center justify-between gap-4">
