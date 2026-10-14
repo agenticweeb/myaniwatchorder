@@ -46,6 +46,13 @@ export function DiscoverCard({ card, onSelect }: DiscoverCardProps) {
   const progress = useCardProgress(card.anilistId);
   const year = card.aired || (card.seasonYear ? String(card.seasonYear) : "");
   const eps = card.episodes ? `${card.episodes} eps` : "?";
+  const routePreview = card.isFranchise
+    ? (card.franchiseEntries && card.franchiseEntries >= 12) || (card.episodes && card.episodes >= 100)
+      ? "High route complexity"
+      : card.franchiseEntries && card.franchiseEntries >= 5
+        ? "Medium route complexity"
+        : "Low route complexity"
+    : null;
 
   return (
     <button
@@ -84,6 +91,11 @@ export function DiscoverCard({ card, onSelect }: DiscoverCardProps) {
           {progress && !progress.watched && (
             <span className="rounded-full bg-chrono-primary/90 px-2 py-0.5 text-[9px] font-extrabold tracking-wider text-white shadow-lg">
               Ep {progress.episodesWatched}/{progress.maxEpisodes}
+            </span>
+          )}
+          {routePreview && (
+            <span className="rounded-full bg-black/70 px-2 py-0.5 text-[9px] font-extrabold tracking-wider text-white/90 shadow-lg">
+              {routePreview}
             </span>
           )}
         </div>

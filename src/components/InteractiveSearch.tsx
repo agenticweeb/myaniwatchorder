@@ -48,6 +48,7 @@ import { DiscoverShelves } from "@/components/DiscoverShelves";
 import { CinematicHero } from "@/components/CinematicHero";
 import { HomepageDiscovery } from "@/components/HomepageDiscovery";
 import { DiscoveryFeedback } from "@/components/DiscoveryFeedback";
+import { VibeSearch } from "@/components/VibeSearch";
 import type { DiscoverCardData } from "@/lib/discover/shelf-recipes";
 
 
@@ -296,6 +297,27 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
     setSlopFilters((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
+  };
+
+  const handleVibeSearch = (prompt: string) => {
+    const value = prompt.toLowerCase();
+    const genres = new Set<string>();
+    if (/dark|grim|disturbing|horror/.test(value)) genres.add("Horror");
+    if (/mystery|detective|puzzle/.test(value)) genres.add("Mystery");
+    if (/psychological|mind[- ]?bending|deep/.test(value)) genres.add("Psychological");
+    if (/sci[- ]?fi|space|future/.test(value)) genres.add("Sci-Fi");
+    if (/mecha|robot/.test(value)) genres.add("Mecha");
+    if (/romance|romantic|love/.test(value)) genres.add("Romance");
+    if (/sports|sport/.test(value)) genres.add("Sports");
+    if (/fantasy|magic/.test(value)) genres.add("Fantasy");
+    if (genres.size) setSelectedGenres([...genres]);
+    if (/highly rated|well rated|top rated|masterpiece|excellent/.test(value)) setMinRating(8);
+    const era = value.match(/(1990s|2000s|2010s|2020s)/)?.[1];
+    if (era) setSelectedYear(era);
+    const muted = EXCLUDE_OPTIONS.filter((option) => value.includes(option.name.toLowerCase()));
+    if (muted.length) setSlopFilters((previous) => [...new Set([...previous, ...muted.map((option) => option.name)])]);
+    setShowFilters(true);
+    if (activeTab !== "discover") handleTabSwitch("discover");
   };
 
   // Infinite-scroll sentinel — fetches BEFORE the user reaches the bottom
@@ -697,6 +719,8 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
               : "hidden"
           )}
         >
+          <VibeSearch onApply={handleVibeSearch} />
+
           {/* Zone 1 — Curated shelves (identical for every visitor; ignore the filter bar) */}
           <DiscoverShelves onSelect={handleSelectDiscoverCard} />
 

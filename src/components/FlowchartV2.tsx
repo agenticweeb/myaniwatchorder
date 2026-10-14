@@ -61,6 +61,7 @@ import {
 import { buildFocusedResult } from "@/lib/focus-entry";
 import { ShareCard } from "@/components/ShareCard";
 import { FranchiseDNA } from "@/components/FranchiseDNA";
+import { SkipLedgerSignal } from "@/components/SkipLedgerSignal";
 import { computeDNA } from "@/lib/dna";
 import { RouteBrief } from "@/components/RouteBrief";
 import { saveRouteSnapshot } from "@/lib/route-snapshots";
@@ -686,6 +687,8 @@ export default function FlowchartV2({
           <FranchiseDNA dna={computeDNA(data)} franchiseName={data.franchise} />
         </div>
       </details>
+
+      <SkipLedgerSignal mediaIds={(data.allEntriesFlat || []).map((entry) => entry.anilistId).filter((id): id is number => Boolean(id))} />
 
       {/* Shareable Card Integration */}
       <ShareCard result={data} />
