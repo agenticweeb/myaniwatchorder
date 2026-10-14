@@ -341,6 +341,7 @@ export async function generateWatchOrderAction(
 
     const prefHash = JSON.stringify(validated.preferences);
     const cacheKey = `watchorder_v2:${validated.anilistId || validated.animeName}:${validated.scope}:${prefHash}`;
+    const snapshotKey = `watchorder_latest_v1:${validated.anilistId || validated.animeName.toLowerCase()}:${validated.scope}`;
     const cached = await redis.get<{ result: WatchOrderResultV2; provider: string; latency: number }>(cacheKey);
     
     if (cached) {
@@ -371,6 +372,31 @@ export async function generateWatchOrderAction(
         },
       });
     } catch (genError) {
+      // STALE-WHILE-REVALIDATE FALLBACK — a successful guide is more useful
+      // than a temporary AniList outage. Keep this separate from the
+      // preference-specific cache so a cold preference combination can still
+      // render a verified last-known-good franchise map.
+      try {
+        const snapshot = await redis.get<{ result: WatchOrderResultV2; provider: string }>(snapshotKey);
+        if (snapshot?.result) {
+          snapshot.result.warnings = [
+            ...(snapshot.result.warnings || []),
+            "Showing the last verified guide while live AniList enrichment recovers.",
+          ];
+          return {
+            success: true,
+            data: {
+              dataV2: snapshot.result,
+              provider: "stale-verified-snapshot",
+              latency: 0,
+              debug: { staleSnapshot: true, sourceProvider: snapshot.provider },
+            },
+          };
+        }
+      } catch {
+        /* Snapshot fallback is best-effort and must never mask the live error. */
+      }
+
       // OUTAGE FALLBACK — curated franchises never fail.
       // If AniList is down but we hold curated ground truth for this title,
       // serve the verified order without live enrichment (no images/scores/
@@ -433,7 +459,8 @@ export async function generateWatchOrderAction(
     ).length || 0;
     const enrichmentRate = totalEntries > 0 ? entriesWithImages / totalEntries : 0;
 
-    const cacheTtl = enrichmentRate < 0.5 ? 3600 : 604800;
+    const degradedGraph = result.result.warnings?.some((warning) => warning.includes("rate-limited graph expansion")) || false;
+    const cacheTtl = enrichmentRate < 0.5 || degradedGraph ? 3600 : 604800;
 
     if (enrichmentRate < 0.5) {
       console.warn(
@@ -442,6 +469,9 @@ export async function generateWatchOrderAction(
     }
 
     await redis.set(cacheKey, { result: result.result, provider: result.provider, latency: result.latency }, { ex: cacheTtl });
+    if (!degradedGraph) {
+      await redis.set(snapshotKey, { result: result.result, provider: result.provider }, { ex: 2592000 });
+    }
 
     return {
       success: true,

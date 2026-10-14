@@ -7,6 +7,7 @@
  */
 
 import { RawRelationNode, RelationGraph, AllowedTitle, EntryFormat } from "@/types/intelligent";
+import { redis } from "@/lib/redis";
 
 function parseFormat(f?: string | null, ty?: string | null): EntryFormat {
   const raw = (f || ty || "TV").toUpperCase();
@@ -52,6 +53,13 @@ async function fetchWithRetry(body: any, retries = 3) {
   let lastError = "unknown error";
   for (let a = 0; a <= retries; a++) {
     try {
+      try {
+        const cooldown = await redis.get<string>("anilist:relation-cooldown");
+        if (cooldown) throw new AniListUnavailableError("temporarily rate limited — using the verified graph frontier instead");
+      } catch (error) {
+        if (error instanceof AniListUnavailableError) throw error;
+        /* Redis outage must not block the live request. */
+      }
       const res = await fetch(ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,6 +81,7 @@ async function fetchWithRetry(body: any, retries = 3) {
 
       // Retryable statuses
       if (res.status === 429) {
+        try { await redis.set("anilist:relation-cooldown", "1", { ex: 20 }); } catch { /* best effort */ }
         const w = Math.min(800 + Math.pow(2, a) * 600 + Math.random() * 400, 7000);
         console.warn(`AniList 429 retry ${a + 1} wait ${Math.round(w)}ms`);
         await sleep(w);
@@ -109,8 +118,23 @@ async function fetchWithRetry(body: any, retries = 3) {
 }
 
 async function fetchAniListMedia(id: number): Promise<any | null> {
+  const cacheKey = `anilist:relation-media:v1:${id}`;
+  try {
+    const cached = await redis.get<any>(cacheKey);
+    if (cached) return cached;
+  } catch {
+    /* Redis is an optimization; live AniList remains the source of truth. */
+  }
   const data = await fetchWithRetry({ query: MEDIA_Q, variables: { id } });
-  return data?.Media || null;
+  const media = data?.Media || null;
+  if (media) {
+    try {
+      await redis.set(cacheKey, media, { ex: 86400 });
+    } catch {
+      /* Ignore cache write failures. */
+    }
+  }
+  return media;
 }
 
 async function searchAniListForRoot(search: string, perPage = 5): Promise<any | null> {
@@ -220,10 +244,12 @@ export async function buildRelationGraph(params: BuildGraphParams) {
   const maxDepth = params.maxDepth ?? (params.scope === "franchise" ? 6 : 0);
   
   let root: RawRelationNode | null = null;
+  let rootMedia: any | null = null;
   
   if (params.anilistId) {
     const media = await fetchAniListMedia(params.anilistId);
     if (media && isAnimeFormat(media.format)) {
+      rootMedia = media;
       root = anilistToRaw(media, 0);
     }
   }
@@ -233,6 +259,7 @@ export async function buildRelationGraph(params: BuildGraphParams) {
     if (!bestMatch) throw new Error(`No anime found for "${params.title}"`);
     const media = await fetchAniListMedia(bestMatch.id);
     if (media && isAnimeFormat(media.format)) {
+      rootMedia = media;
       root = anilistToRaw(media, 0);
     }
   }
@@ -260,7 +287,21 @@ export async function buildRelationGraph(params: BuildGraphParams) {
       break;
     }
     
-    const media = await fetchAniListMedia(currentId);
+    let media: any | null = null;
+    try {
+      // The root was already fetched during resolution. Reusing that response
+      // saves one expensive request and avoids immediately rate-limiting a
+      // large franchise before traversal even starts.
+      media = currentId === root.anilistId && rootMedia
+        ? rootMedia
+        : await fetchAniListMedia(currentId);
+    } catch (error) {
+      if (error instanceof AniListUnavailableError && nodes.size >= 3) {
+        warnings.push("AniList rate-limited graph expansion. Stopped at the verified relation frontier; no unverified titles were added.");
+        break;
+      }
+      throw error;
+    }
     if (!media) {
       warnings.push(`Failed to fetch relations for ID ${currentId}`);
       continue;
