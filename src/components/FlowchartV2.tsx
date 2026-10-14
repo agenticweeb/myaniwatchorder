@@ -62,6 +62,8 @@ import { buildFocusedResult } from "@/lib/focus-entry";
 import { ShareCard } from "@/components/ShareCard";
 import { FranchiseDNA } from "@/components/FranchiseDNA";
 import { computeDNA } from "@/lib/dna";
+import { RouteBrief } from "@/components/RouteBrief";
+import { saveRouteSnapshot } from "@/lib/route-snapshots";
 
 interface FlowchartV2Props {
   data: WatchOrderResultV2;
@@ -80,6 +82,17 @@ function getYoutubeEmbedUrl(url?: string | null): string | null {
   if (url.includes("youtube.com/embed/"))
     return url.includes("?") ? `${url}&autoplay=1` : `${url}?autoplay=1`;
   return null;
+}
+
+function getYoutubeVideoId(url?: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === "youtu.be") return parsed.pathname.slice(1) || null;
+    return parsed.searchParams.get("v") || parsed.pathname.match(/(?:embed|shorts|v)\/([^/?]+)/)?.[1] || null;
+  } catch {
+    return url.match(/(?:v=|youtu\.be\/|embed\/)([^&/?]+)/)?.[1] || null;
+  }
 }
 
 const tierConfig: Record<
@@ -230,7 +243,22 @@ export default function FlowchartV2({
       imageUrl: heroImage,
       coverColor: data.franchiseColor,
     });
-  }, [data.franchiseId, data.franchise, data.franchiseColor, heroImage, pathEntries.length, registerTimeline, totalTimelineEpisodes]);
+    saveRouteSnapshot({
+      franchiseId: data.franchiseId,
+      franchise: data.franchise,
+      generatedAt: new Date().toISOString(),
+      pathId: activePath?.id || "default",
+      entries: pathEntries.map((entry) => ({
+        id: entry.id,
+        title: entry.title,
+        tier: entry.tier,
+        episodeCount: entry.episodeCount,
+        timeEstimate: entry.timeEstimate,
+        whyWatch: entry.whyWatch,
+        trailerUrl: entry.trailerUrl,
+      })),
+    });
+  }, [activePath?.id, data.franchiseId, data.franchise, data.franchiseColor, heroImage, pathEntries.length, registerTimeline, totalTimelineEpisodes]);
   const completionRate = getCompletionRate(totalTimelineEpisodes);
 
   const timeData = useMemo(
@@ -599,6 +627,19 @@ export default function FlowchartV2({
           </div>
         </div>
       </div>
+
+      <RouteBrief
+        franchise={data.franchise}
+        summary={data.summary}
+        firstEntry={pathEntries.find((entry) => entry.tier === "essential") || pathEntries[0]}
+        totalEntries={activePath?.totalEntries || data.totalEntries}
+        totalEpisodes={activePath?.totalEpisodes || data.totalEpisodes}
+        totalTime={activePath?.totalTime || data.totalDuration}
+        essentialEntries={pathEntries.filter((entry) => entry.tier === "essential").length}
+        optionalEntries={pathEntries.filter((entry) => entry.tier === "optional").length}
+        progress={completionRate}
+        onPlayTrailer={setActiveTrailerUrl}
+      />
 
       {/* Time experience — collapsed by default (was consuming too much vertical space) */}
       <details className="group mt-4">
@@ -1239,6 +1280,7 @@ function EntryNode({
     entry.status === "Airing" ||
     entry.status === "RELEASING" ||
     entry.status === "Upcoming";
+  const trailerId = getYoutubeVideoId(entry.trailerUrl);
 
   return (
     <div className={cn("relative pl-12 sm:pl-16", !isLast && "pb-1")}>
@@ -1375,6 +1417,13 @@ function EntryNode({
           </div>
 
           <div className="flex flex-col items-center gap-2 flex-shrink-0">
+            <TrailerButton
+              trailer={trailerId ? { id: trailerId, site: "youtube" } : null}
+              title={entry.title}
+              englishTitle={entry.titleEnglish}
+              onPlayTrailer={onPlayTrailer}
+              compact
+            />
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -1542,8 +1591,8 @@ function EntryNode({
                       <FranchisePulse mediaId={entry.anilistId} currentTier={entry.tier} />
                     )}
                     <div className="flex flex-wrap gap-2 pt-2">
-                      <TrailerButton 
-                        trailer={entry.trailerUrl ? { id: entry.trailerUrl.split('v=')[1], site: 'youtube' } : null} 
+                      <TrailerButton
+                        trailer={trailerId ? { id: trailerId, site: "youtube" } : null}
                         title={entry.title} 
                         englishTitle={entry.titleEnglish} 
                         onPlayTrailer={onPlayTrailer}
