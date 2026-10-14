@@ -377,8 +377,8 @@ export async function generateWatchOrderAction(
       // preference-specific cache so a cold preference combination can still
       // render a verified last-known-good franchise map.
       try {
-        const snapshot = await redis.get<{ result: WatchOrderResultV2; provider: string }>(snapshotKey);
-        if (snapshot?.result) {
+        const snapshot = await redis.get<{ result: WatchOrderResultV2; provider: string; prefHash?: string }>(snapshotKey);
+        if (snapshot?.result && snapshot.prefHash === prefHash) {
           snapshot.result.warnings = [
             ...(snapshot.result.warnings || []),
             "Showing the last verified guide while live AniList enrichment recovers.",
@@ -470,7 +470,7 @@ export async function generateWatchOrderAction(
 
     await redis.set(cacheKey, { result: result.result, provider: result.provider, latency: result.latency }, { ex: cacheTtl });
     if (!degradedGraph) {
-      await redis.set(snapshotKey, { result: result.result, provider: result.provider }, { ex: 2592000 });
+      await redis.set(snapshotKey, { result: result.result, provider: result.provider, prefHash }, { ex: 2592000 });
     }
 
     return {
