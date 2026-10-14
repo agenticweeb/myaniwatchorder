@@ -30,12 +30,12 @@ const BASE_SUGGESTIONS = [
   { title: "Haruhi Suzumiya", malId: 849, anilistId: 849, imageUrl: "", score: 8.0, tag: "Non-Linear", desc: "Broadcast order intentionally jumps through time.", slug: "haruhi-suzumiya" },
   { title: "Durarara!!", malId: 6746, anilistId: 6746, imageUrl: "", score: 8.0, tag: "Multi-POV", desc: "Non-linear narrative chunks with confusing suffixes.", slug: "durarara" },
   { title: "Toaru (Index & Railgun)", malId: 4654, anilistId: 4654, imageUrl: "", score: 7.5, tag: "Overlap", desc: "Spin-offs take place simultaneously from different POVs.", slug: "toaru-series" },
-  { title: "Horimiya", malId: 124041, anilistId: 124041, imageUrl: "", score: 8.1, tag: "Intercut", desc: "Second season adapts chapters skipped in the first.", slug: "horimiya" },
-  { title: "My Hero Academia", malId: 21459, anilistId: 21459, imageUrl: "", score: 8.0, tag: "Canon Movies", desc: "Know exactly which episode to pause to watch movies.", slug: "my-hero-academia" },
-  { title: "Baccano!", malId: 3603, anilistId: 3603, imageUrl: "", score: 8.5, tag: "Anachronistic", desc: "Skips across multiple different decades simultaneously.", slug: "baccano" },
+  { title: "Horimiya", malId: 42897, anilistId: 124080, imageUrl: "", score: 8.1, tag: "Intercut", desc: "Second season adapts chapters skipped in the first.", slug: "horimiya" },
+  { title: "My Hero Academia", malId: 31964, anilistId: 21459, imageUrl: "", score: 8.0, tag: "Canon Movies", desc: "Know exactly which episode to pause to watch movies.", slug: "my-hero-academia" },
+  { title: "Baccano!", malId: 2251, anilistId: 2251, imageUrl: "", score: 8.5, tag: "Anachronistic", desc: "Skips across multiple different decades simultaneously.", slug: "baccano" },
   { title: "Danganronpa", malId: 16592, anilistId: 16592, imageUrl: "", score: 7.5, tag: "Swap Order", desc: "Swap back and forth between two airing seasons.", slug: "danganronpa" },
   { title: "Clannad", malId: 2167, anilistId: 2167, imageUrl: "", score: 8.5, tag: "Alt Routes", desc: "OVA episodes completely change the final outcome.", slug: "clannad" },
-  { title: "Haikyu!!", malId: 20883, anilistId: 20883, imageUrl: "", score: 8.7, tag: "Canon Movies", desc: "Critical story progression hidden between seasons.", slug: "haikyu" },
+  { title: "Haikyu!!", malId: 20583, anilistId: 20464, imageUrl: "", score: 8.7, tag: "Canon Movies", desc: "Critical story progression hidden between seasons.", slug: "haikyu" },
 ];
 
 // 2. Make the page an async Server Component
