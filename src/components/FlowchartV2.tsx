@@ -217,11 +217,20 @@ export default function FlowchartV2({
   const pathEntries =
     activePath?.groups.flatMap((g) => g.entries) || data.allEntriesFlat || [];
 
-  const { progress, toggleWatched, getCompletionRate } = useProgress(
+  const { progress, toggleWatched, getCompletionRate, registerTimeline } = useProgress(
     data.franchiseId
   );
   // Calculate the total episodes in the current timeline path
   const totalTimelineEpisodes = pathEntries.reduce((sum, e) => sum + (e.episodeCount || 1), 0);
+  useEffect(() => {
+    registerTimeline({
+      totalEpisodes: totalTimelineEpisodes,
+      totalEntries: pathEntries.length,
+      title: data.franchise,
+      imageUrl: heroImage,
+      coverColor: data.franchiseColor,
+    });
+  }, [data.franchiseId, data.franchise, data.franchiseColor, heroImage, pathEntries.length, registerTimeline, totalTimelineEpisodes]);
   const completionRate = getCompletionRate(totalTimelineEpisodes);
 
   const timeData = useMemo(

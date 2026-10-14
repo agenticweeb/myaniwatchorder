@@ -91,41 +91,8 @@ export function HeaderActions() {
     };
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
-
-      if (event === 'SIGNED_IN' && session?.user) {
-        try {
-          const { data: profile } = await supabase
-            .from('user_progress')
-            .select('progress_data')
-            .eq('id', session.user.id)
-            .single();
-
-          const hasCloudData = profile && Object.keys(profile.progress_data || {}).length > 0;
-
-          if (!hasCloudData) {
-            const localData = localStorage.getItem('myaniwatchorder-progress-v2');
-            if (localData) {
-              const parsed = JSON.parse(localData);
-              const progressMap = parsed?.state?.progressMap;
-
-              if (progressMap && Object.keys(progressMap).length > 0) {
-                await supabase
-                  .from('user_progress')
-                  .update({
-                    progress_data: progressMap,
-                    updated_at: new Date().toISOString()
-                  })
-                  .eq('id', session.user.id);
-                console.log('✅ Migrated local progress to Supabase');
-              }
-            }
-          }
-        } catch (e) {
-          console.error('Migration error:', e);
-        }
-      }
     });
 
     return () => subscription.unsubscribe();

@@ -224,6 +224,10 @@ export interface UserProgress {
   lastUpdated: string;
   totalWatched: number;
   totalEpisodes: number;
+  totalEntries?: number;
+  title?: string;
+  imageUrl?: string;
+  coverColor?: string;
   shareCode?: string;
 }
 

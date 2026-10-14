@@ -10,6 +10,7 @@ export function useProgress(franchiseId: string) {
   const updateProgressStore = useWatchStore((state) => state.updateProgress);
   const rateEntryStore = useWatchStore((state) => state.rateEntry);
   const addNoteStore = useWatchStore((state) => state.addNote);
+  const registerTimelineStore = useWatchStore((state) => state.registerTimeline);
 
   const toggleWatched = useCallback(
     (entryId: string, entry: WatchOrderEntry) => {
@@ -37,6 +38,13 @@ export function useProgress(franchiseId: string) {
       addNoteStore(franchiseId, entryId, note);
     },
     [franchiseId, addNoteStore]
+  );
+
+  const registerTimeline = useCallback(
+    (metadata: { totalEpisodes: number; totalEntries: number; title?: string; imageUrl?: string; coverColor?: string }) => {
+      registerTimelineStore(franchiseId, metadata);
+    },
+    [franchiseId, registerTimelineStore]
   );
 
   const getCompletionRate = useCallback((totalTimelineEpisodes: number = 0) => {
@@ -73,6 +81,7 @@ export function useProgress(franchiseId: string) {
     updateProgress,
     rateEntry,
     addNote,
+    registerTimeline,
     getCompletionRate,
     generateShareCode,
   };

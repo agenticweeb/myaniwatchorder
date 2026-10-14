@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { UserProgress, EntryProgress } from "@/types";
+import { UserProgress } from "@/types";
+
+interface TimelineMetadata {
+  totalEpisodes: number;
+  totalEntries: number;
+  title?: string;
+  imageUrl?: string;
+  coverColor?: string;
+}
 
 interface WatchStoreState {
   progressMap: Record<string, UserProgress>;
@@ -9,6 +17,8 @@ interface WatchStoreState {
   toggleAudio: () => void;
   // Progress Actions
   toggleWatched: (franchiseId: string, entryId: string, episodeCount: number) => void;
+  registerTimeline: (franchiseId: string, metadata: TimelineMetadata) => void;
+  replaceProgressMap: (progressMap: Record<string, UserProgress>) => void;
   updateProgress: (franchiseId: string, entryId: string, episodesWatched: number, maxEpisodes: number) => void;
   rateEntry: (franchiseId: string, entryId: string, rating: number) => void;
   addNote: (franchiseId: string, entryId: string, note: string) => void;
@@ -23,6 +33,34 @@ export const useWatchStore = create<WatchStoreState>()(
       // Audio Settings Implementation
       isAudioEnabled: false, // Default to false (browser autoplay policy)
       toggleAudio: () => set((state) => ({ isAudioEnabled: !state.isAudioEnabled })),
+
+      replaceProgressMap: (progressMap) => set({ progressMap }),
+
+      registerTimeline: (franchiseId, metadata) => {
+        set((state) => {
+          const existing = state.progressMap[franchiseId];
+          if (!existing) return state;
+          const totalWatched = Object.values(existing.entries).reduce(
+            (sum, entry) => sum + (entry.episodesWatched || 0),
+            0
+          );
+          const typed = existing as UserProgress & { totalEntries?: number; title?: string; imageUrl?: string; coverColor?: string };
+          return {
+            progressMap: {
+              ...state.progressMap,
+              [franchiseId]: {
+                ...existing,
+                totalEpisodes: Math.max(existing.totalEpisodes || 0, metadata.totalEpisodes),
+                totalEntries: Math.max(typed.totalEntries || 0, metadata.totalEntries),
+                totalWatched,
+                title: metadata.title || typed.title,
+                imageUrl: metadata.imageUrl || typed.imageUrl,
+                coverColor: metadata.coverColor || typed.coverColor,
+              },
+            },
+          };
+        });
+      },
 
       getProgress: (franchiseId) => {
         return get().progressMap[franchiseId] || null;
@@ -41,21 +79,21 @@ export const useWatchStore = create<WatchStoreState>()(
 
           const isWatched = !franchise.entries[entryId]?.watched;
           const episodes = episodeCount || 1;
+          const oldEpisodes = franchise.entries[entryId]?.episodesWatched || 0;
 
           const updatedFranchise: UserProgress = {
             ...franchise,
             entries: {
               ...franchise.entries,
               [entryId]: {
+                ...franchise.entries[entryId],
                 watched: isWatched,
                 episodesWatched: isWatched ? episodes : 0,
                 maxEpisodes: episodes, // <--- ADD THIS LINE
                 watchedAt: isWatched ? new Date().toISOString() : undefined,
               },
             },
-            totalWatched: isWatched
-              ? franchise.totalWatched + episodes
-              : Math.max(0, franchise.totalWatched - episodes),
+            totalWatched: Math.max(0, franchise.totalWatched - oldEpisodes + (isWatched ? episodes : 0)),
             lastUpdated: new Date().toISOString(),
           };
 
