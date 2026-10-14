@@ -5,6 +5,7 @@ import { WandSparkles } from "lucide-react";
 
 interface VibeSearchProps {
   onApply: (prompt: string) => void;
+  interpretation?: string;
 }
 
 const EXAMPLES = [
@@ -13,7 +14,7 @@ const EXAMPLES = [
   "a highly rated sci-fi from the 2010s",
 ];
 
-export function VibeSearch({ onApply }: VibeSearchProps) {
+export function VibeSearch({ onApply, interpretation }: VibeSearchProps) {
   const [value, setValue] = useState("");
   const submit = (prompt = value) => {
     const clean = prompt.trim();
@@ -36,6 +37,7 @@ export function VibeSearch({ onApply }: VibeSearchProps) {
           <div className="mt-2 flex flex-wrap gap-1.5">
             {EXAMPLES.map((example) => <button type="button" key={example} onClick={() => submit(example)} className="rounded-full border border-chrono-border/30 px-2.5 py-1 text-[10px] text-chrono-text-muted hover:border-chrono-primary/50 hover:text-white">Try “{example}”</button>)}
           </div>
+          {interpretation && <p className="mt-3 rounded-xl border border-chrono-primary/20 bg-chrono-primary/10 px-3 py-2 text-[11px] font-semibold text-violet-100">Vibe applied: {interpretation} · scroll down to see matching anime.</p>}
         </div>
       </div>
     </section>

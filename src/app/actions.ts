@@ -134,9 +134,11 @@ const DISCOVER_QUERY = `
     $page: Int,
     $perPage: Int,
     $genres: [String],
+    $includedTags: [String],
     $excludedGenres: [String],
     $excludedTags: [String],
     $scoreGreater: Int,
+    $episodesLesser: Int,
     $yearGreater: FuzzyDateInt,
     $yearLesser: FuzzyDateInt,
     $countryOfOrigin: CountryCode,
@@ -148,9 +150,11 @@ const DISCOVER_QUERY = `
         type: ANIME
         isAdult: false
         genre_in: $genres
+        tag_in: $includedTags
         genre_not_in: $excludedGenres
         tag_not_in: $excludedTags
         averageScore_greater: $scoreGreater
+        episodes_lesser: $episodesLesser
         startDate_greater: $yearGreater
         startDate_lesser: $yearLesser
         countryOfOrigin: $countryOfOrigin
@@ -165,9 +169,11 @@ const DISCOVER_QUERY = `
 
 const DiscoverFiltersSchema = z.object({
   genres: z.array(z.string()).default([]),
+  includedTags: z.array(z.string()).default([]),
   excludedGenres: z.array(z.string()).default([]),
   excludedTags: z.array(z.string()).default([]),
   minRating: z.number().min(0).max(10).default(0),
+  maxEpisodes: z.number().int().min(1).max(1000).optional(),
   yearEra: z.string().default("All Time"),
   sortBy: z.string().default("popularity"),
   language: z.string().default("All"),
@@ -183,9 +189,11 @@ export type DiscoverPageResult = ActionResult<DiscoverPageData>;
 export async function discoverAnimeAction(
   filters: {
     genres: string[];
+    includedTags?: string[];
     excludedGenres?: string[];
     excludedTags?: string[];
     minRating: number;
+    maxEpisodes?: number;
     yearEra: string;
     sortBy: string;
     language: string;
@@ -240,9 +248,11 @@ export async function discoverAnimeAction(
       genres: f.genres?.length > 0 && !f.genres.includes("All") 
         ? f.genres 
         : undefined,
+      includedTags: f.includedTags?.length > 0 ? f.includedTags : undefined,
       excludedGenres: f.excludedGenres?.length > 0 ? f.excludedGenres : undefined,
       excludedTags: f.excludedTags?.length > 0 ? f.excludedTags : undefined,
       scoreGreater: f.minRating > 0 ? Math.round(f.minRating * 10) : undefined,
+      episodesLesser: f.maxEpisodes,
       yearGreater: eraDates.startDateGreater,
       yearLesser: eraDates.startDateLesser,
       countryOfOrigin: f.language !== "All" ? f.language : undefined,
