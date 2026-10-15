@@ -1123,9 +1123,9 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
                 <SuggestionImage src={selected.imageUrl} alt="" franchise={selected.title} className="w-full h-full object-cover" />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] font-bold text-chrono-accent uppercase tracking-widest block">Selected</span>
+                <span className="text-[10px] font-bold text-chrono-accent uppercase tracking-widest block">Building your route for</span>
                 <h3 className="font-bold text-white text-base truncate">{selected.title}</h3>
-                <p className="text-[11px] text-chrono-text-dim mt-0.5 font-medium">Custom preferences loaded</p>
+                <p className="text-[11px] text-chrono-text-dim mt-0.5 font-medium">Choose your pace, path, and skip strategy below.</p>
               </div>
             </div>
             <button type="button" onClick={handleReset} className="btn-secondary py-2 px-3 text-xs shrink-0 flex items-center gap-1.5 cursor-pointer">
@@ -1143,7 +1143,7 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
               className="btn-primary text-base px-8 py-4 shadow-xl shadow-chrono-primary/25 cursor-pointer"
             >
               <Clock className="w-5 h-5" />
-              <span>Generate watch order</span>
+              <span>Build my watch order</span>
             </button>
           </div>
         </div>

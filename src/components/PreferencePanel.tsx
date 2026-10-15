@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, Eye, Heart, Star, Zap, CalendarDays, Hash } from "lucide-react";
+import { Clock, Eye, Heart, Star, Zap, CalendarDays, Hash, Route } from "lucide-react";
 import {
   UserPreferences,
   TimeBudget,
@@ -112,6 +112,14 @@ export function PreferencePanel({
 }: PreferencePanelProps) {
   const activePaceType = preferences.paceType || "duration";
   const activeEpsPerDay = preferences.episodesPerDay || 2;
+  const activePace = activePaceType === "episodes"
+    ? `${activeEpsPerDay} ${activeEpsPerDay === 1 ? "episode" : "episodes"}/day`
+    : PACE_OPTIONS.find((option) => option.value === preferences.timeBudget)?.desc || "1 hour/day";
+  const activeSkip = SKIP_OPTIONS.find((option) => option.value === preferences.skipPreference)?.label || "Smart Skip";
+  const activePath = PATH_OPTIONS.find((option) => option.value === preferences.preferredPath)?.label || "Optimal";
+  const activeMood = (preferences.mood || ["all"]).includes("all")
+    ? "Any mood"
+    : (preferences.mood || []).map((mood) => MOOD_OPTIONS.find((option) => option.value === mood)?.label).filter(Boolean).join(" · ");
 
   const toggleMood = (mood: Mood) => {
     if (mood === "all") {
@@ -132,15 +140,35 @@ export function PreferencePanel({
   };
 
   return (
-    <div className="glass-card p-5 sm:p-6 space-y-6 border border-chrono-border/40 bg-chrono-surface/40">
-      <div>
-        <h2 className="text-lg font-semibold text-chrono-text tracking-tight">
-          How you watch
-        </h2>
-        <p className="text-xs text-chrono-text-dim mt-1">
-          These never change what exists — only order preference, skips, and
-          finish dates.
-        </p>
+    <div className="glass-card p-4 sm:p-6 space-y-6 border border-chrono-border/40 bg-chrono-surface/40">
+      <div className="flex items-start gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-chrono-primary/15 text-chrono-primary">
+          <Route className="h-5 w-5" aria-hidden="true" />
+        </div>
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-chrono-primary">Build your route</p>
+          <h2 className="mt-1 text-lg font-extrabold tracking-tight text-white">How do you want to watch?</h2>
+          <p className="mt-1 text-xs leading-relaxed text-chrono-text-dim">
+            Tune the route, skips, and pace. The anime entries themselves stay grounded in the franchise data.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-chrono-primary/25 bg-chrono-primary/[0.07] p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-chrono-primary">Your route at a glance</p>
+            <p className="mt-1 text-xs text-chrono-text-dim">You can change any of these before generating.</p>
+          </div>
+          <span className="hidden rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-chrono-text-dim sm:inline-flex">Live preview</span>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[activePath, activeSkip, activePace, activeMood].map((label) => (
+            <span key={label} className="rounded-full border border-chrono-border/35 bg-black/15 px-2.5 py-1.5 text-[11px] font-bold text-white">
+              {label}
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* NEW PACE TYPE TOGGLER: Duration vs Episodes per day */}
@@ -148,9 +176,9 @@ export function PreferencePanel({
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-sm font-medium text-chrono-text-muted">
             <Clock className="w-4 h-4 text-chrono-primary" />
-            Pace Format
+            Watch pace
             <span className="text-[10px] font-normal text-chrono-text-dim ml-1">
-              · select how you track watch limits
+              · choose time or episodes
             </span>
           </label>
           <div className="flex rounded-xl bg-chrono-surface border border-chrono-border p-1">
@@ -231,9 +259,9 @@ export function PreferencePanel({
         <div className="flex items-center justify-between">
           <label className="flex items-center gap-2 text-sm font-medium text-chrono-text-muted">
             <CalendarDays className="w-4 h-4 text-chrono-primary" />
-            Custom Weekly Schedule
+            Custom weekly schedule
             <span className="text-[10px] font-normal text-chrono-text-dim ml-1">
-              · custom hours per day (Overrides standard pace settings)
+              · overrides watch pace when enabled
             </span>
           </label>
           <button
@@ -404,7 +432,7 @@ export function PreferencePanel({
       <div>
         <label className="flex items-center gap-2 text-sm font-medium text-chrono-text-muted mb-2">
           <Heart className="w-4 h-4 text-chrono-accent" />
-          Mood
+          Mood preference
           <span className="text-[10px] font-normal text-chrono-text-dim">
             · optional · influences path pick, not titles
           </span>
