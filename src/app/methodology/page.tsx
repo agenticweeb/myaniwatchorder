@@ -62,7 +62,7 @@ export default function MethodologyPage() {
         <section className="mt-10 rounded-2xl border border-chrono-border/25 bg-chrono-surface/25 p-6 sm:p-8">
           <h2 className="text-xl font-bold text-white">What “human-reviewed” means here</h2>
           <p className="mt-3 text-sm leading-7 text-chrono-text-muted">
-            The five editorial route notes on the Fate, Monogatari, Steins;Gate, Gundam Universal Century, and One Piece pages are deliberately separate from generated timeline output. They explain the viewing problem in plain language and should be checked against the displayed route whenever a franchise changes. The generated graph remains the source for current entry metadata; editorial notes explain how to choose a path.
+            The editorial route notes on the Fate, Monogatari, Steins;Gate, Gundam Universal Century, One Piece, Naruto, Bleach, Dragon Ball, Evangelion, and JoJo pages are deliberately separate from generated timeline output. They explain the viewing problem in plain language and should be checked against the displayed route whenever a franchise changes. The generated graph remains the source for current entry metadata; editorial notes explain how to choose a path.
           </p>
           <p className="mt-3 text-sm leading-7 text-chrono-text-muted">
             If you spot a wrong relationship, missing entry, or misleading recommendation, use the feedback control on the site. Corrections are more valuable than adding another generic page.
@@ -72,7 +72,7 @@ export default function MethodologyPage() {
         <section className="mt-10">
           <h2 className="text-xl font-bold text-white">Explore the guides</h2>
           <div className="mt-4 flex flex-wrap gap-2">
-            {["fate-series", "monogatari-series", "steins-gate", "gundam-uc", "one-piece"].map((slug) => (
+            {["fate-series", "monogatari-series", "steins-gate", "gundam-uc", "one-piece", "naruto", "bleach", "dragon-ball", "neon-genesis-evangelion", "jojo-bizarre-adventure"].map((slug) => (
               <Link key={slug} href={`/watch-order/${slug}`} className="inline-flex items-center gap-2 rounded-full border border-chrono-primary/25 bg-chrono-primary/10 px-4 py-2 text-xs font-bold text-chrono-primary hover:bg-chrono-primary/20">
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
                 {slug.replaceAll("-", " ")}
