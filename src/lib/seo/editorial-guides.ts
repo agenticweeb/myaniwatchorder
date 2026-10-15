@@ -137,6 +137,126 @@ export const EDITORIAL_GUIDES: Record<string, EditorialGuide> = {
       { slug: "dragon-ball", label: "Dragon Ball franchise guide" },
     ],
   },
+  naruto: {
+    slug: "naruto",
+    eyebrow: "Editorial route notes",
+    intro: "Naruto is a straightforward story underneath a very large amount of anime-original material. The safest first journey is to protect the main Naruto and Shippuden arcs while treating filler as a deliberate choice rather than an accidental detour.",
+    sections: [
+      {
+        heading: "The main story path",
+        body: "Watch Naruto before Naruto: Shippuden, then continue into the Shippuden story in release order. The sequel assumes the original series has established the team relationships, rivalries, and village history.",
+      },
+      {
+        heading: "Why broad filler lists can mislead",
+        body: "Some episodes sit near canon arcs or mix original scenes with manga material. Use the timeline's entry-level tiers instead of skipping an entire stretch solely because it contains a commonly repeated filler label.",
+      },
+      {
+        heading: "Where the films fit",
+        body: "Most Naruto films are optional side stories. The Last is the important exception to treat as a late-series companion, after the main Shippuden conflict has established the relationships it develops.",
+      },
+    ],
+    related: [
+      { slug: "one-piece", label: "One Piece filler-aware guide" },
+      { slug: "bleach", label: "Bleach smart-skip guide" },
+      { slug: "dragon-ball", label: "Dragon Ball story and movie order" },
+    ],
+  },
+  bleach: {
+    slug: "bleach",
+    eyebrow: "Editorial route notes",
+    intro: "Bleach has a clear central story but several long anime-original arcs interrupt its momentum. A good route keeps the Soul Society, Arrancar, Lost Agent, and Thousand-Year Blood War arcs legible while making the detours easy to opt into.",
+    sections: [
+      {
+        heading: "The first-time route",
+        body: "Follow the original Bleach series through its main story, then continue with Thousand-Year Blood War after the original anime has finished. The sequel is not a replacement for the setup built across the earlier arcs.",
+      },
+      {
+        heading: "How to skip without losing the plot",
+        body: "Avoid skipping around individual episodes blindly: Bleach sometimes returns to canon material immediately after an anime-original block. Use the route tiers and episode-level entries to resume at the correct story point.",
+      },
+      {
+        heading: "Movies and specials",
+        body: "The films are optional expansions and do not need to interrupt the main progression on a first watch. Add them after the relevant characters and powers are familiar, or use the timeline's optional path for a fuller completionist run.",
+      },
+    ],
+    related: [
+      { slug: "naruto", label: "Naruto filler-aware watch order" },
+      { slug: "one-piece", label: "One Piece long-runner guide" },
+      { slug: "dragon-ball", label: "Dragon Ball franchise guide" },
+    ],
+  },
+  "dragon-ball": {
+    slug: "dragon-ball",
+    eyebrow: "Editorial route notes",
+    intro: "Dragon Ball has multiple eras, retellings, films, and an alternate sequel branch. The right order depends on whether you want the broad original story, the faster Kai route, or every major animated continuity.",
+    sections: [
+      {
+        heading: "The core continuity",
+        body: "Start with Dragon Ball, then move to Dragon Ball Z or Dragon Ball Kai before Dragon Ball Super. Kai is a faster retelling of much of Z, so most viewers should choose one version rather than treating both as required sequential seasons.",
+      },
+      {
+        heading: "GT and the modern films",
+        body: "Dragon Ball GT is an alternate continuation rather than a prerequisite for Super. The modern Super films connect to the Super-era story, while older films and specials are best treated as optional unless you are completing the full animated catalogue.",
+      },
+      {
+        heading: "Why version labels matter",
+        body: "Z, Kai, films, specials, and recap editions can describe overlapping material. The timeline separates those versions so you can choose a complete presentation without accidentally watching the same major arc twice.",
+      },
+    ],
+    related: [
+      { slug: "naruto", label: "Naruto long-running story guide" },
+      { slug: "bleach", label: "Bleach arc and filler guide" },
+      { slug: "one-piece", label: "One Piece smart-skip guide" },
+    ],
+  },
+  "neon-genesis-evangelion": {
+    slug: "neon-genesis-evangelion",
+    eyebrow: "Editorial route notes",
+    intro: "Evangelion has an original TV ending, a film that revisits and completes that story, and a separate Rebuild continuity. The key is knowing when you are watching a retelling or alternate development rather than a normal sequel.",
+    sections: [
+      {
+        heading: "The clearest first experience",
+        body: "Watch Neon Genesis Evangelion first, then End of Evangelion. The film works as a companion conclusion to the original series and is more meaningful once the TV version has established the characters and conflicts.",
+      },
+      {
+        heading: "Where Death belongs",
+        body: "Death & Rebirth and related recap editions are not necessary if you have watched the full TV series. They can help as refreshers, but they should not replace the original episodes for a first viewing.",
+      },
+      {
+        heading: "The Rebuild films are a separate route",
+        body: "The Rebuild tetralogy begins with familiar foundations but develops its own continuity and progression. Watch it after the original series and End of Evangelion if you want to understand the changes without confusing them with missing TV episodes.",
+      },
+    ],
+    related: [
+      { slug: "gundam-uc", label: "Gundam continuity guide" },
+      { slug: "fate-series", label: "Fate alternate-world route guide" },
+      { slug: "code-geass", label: "Code Geass split-timeline guide" },
+    ],
+  },
+  "jojo-bizarre-adventure": {
+    slug: "jojo-bizarre-adventure",
+    eyebrow: "Editorial route notes",
+    intro: "JoJo is designed as a generational saga. Its Parts should be watched in order because each one changes the protagonist and setting while carrying forward the consequences, bloodlines, or ideas established before it.",
+    sections: [
+      {
+        heading: "The main order is simple",
+        body: "Watch the animated Parts in numerical order, beginning with Phantom Blood and continuing through Battle Tendency, Stardust Crusaders, Diamond Is Unbreakable, Golden Wind, and Stone Ocean. The Part labels are more useful than trying to reorder the story chronologically.",
+      },
+      {
+        heading: "Why skipping a Part is risky",
+        body: "Later Parts introduce new casts, but they also assume knowledge of the Joestar family, Stand rules, and earlier conflicts. A Part that looks self-contained can still spoil or weaken the impact of the saga's long-term payoffs.",
+      },
+      {
+        heading: "Side stories are optional",
+        body: "OVAs and side stories such as Thus Spoke Kishibe Rohan can be added after the main Part that introduces their characters. They enrich the world but are not required to follow the central animated progression.",
+      },
+    ],
+    related: [
+      { slug: "danganronpa", label: "Danganronpa split-order guide" },
+      { slug: "fate-series", label: "Fate branching-route guide" },
+      { slug: "neon-genesis-evangelion", label: "Evangelion continuity guide" },
+    ],
+  },
 };
 
 export function getEditorialGuide(slug: string): EditorialGuide | undefined {
