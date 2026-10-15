@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://aniwatchorder.cc/about" },
   title: "About MyAniWatchOrder - The AI Anime Watch Order Engine",
   description:
     "MyAniWatchOrder is an AI-powered watch order generator that maps AniList's verified relation edges into deterministic timelines. Learn how we prevent AI hallucinations and calculate exact finish dates.",

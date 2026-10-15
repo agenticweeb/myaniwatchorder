@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { queryAniList } from "@/lib/anilist-client";
 import { FranchisePassport } from "@/components/FranchisePassport";
@@ -8,6 +9,11 @@ import { SettingsSection } from "@/components/account/SettingsSection";
 import { ArrowLeft, Clock, Compass } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Your Anime Journey",
+  robots: { index: false, follow: false },
+};
 
 const MEDIA_INFO_QUERY = `
   query($ids: [Int]) {

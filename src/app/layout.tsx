@@ -12,7 +12,7 @@ const inter = Inter({
 });
 
 // AI Optimization (AIO) Schema Graph
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://myaniwatchorder-zeta.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aniwatchorder.cc";
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -55,6 +55,7 @@ const structuredData = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  alternates: { canonical: siteUrl },
   title: {
     default: "MyAniWatchOrder — Anime Watch Order Engine",
     template: "%s · MyAniWatchOrder",
