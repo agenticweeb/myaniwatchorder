@@ -684,21 +684,25 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
       {/* Tab Content Wrapper for Auto-Scroll */}
       <div ref={tabContentRef} className="scroll-mt-20">
 
-      {/* Grounded Intelligence hero — Find Your Path only. Hidden on Discover
-          (space) and during selection/results (focus). Component was intact
-          but unmounted; this restores it at the tab level. */}
-      {activeTab === "builder" && !selected && !finalData && <CinematicHero />}
-
-      {/* Tab 1 Search Stage */}
+      {/* Search-first landing stage: the primary action comes before the supporting story. */}
       {activeTab === "builder" && !selected && !finalData && (
-        <div className="relative max-w-2xl mx-auto w-full z-50 animate-fade-in">
+        <div className="relative z-50 mx-auto w-full max-w-3xl animate-fade-in">
+          <div className="mb-3 flex items-end justify-between gap-3 px-1">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-chrono-primary">Start here</p>
+              <h2 className="mt-1 text-xl font-extrabold tracking-tight text-white sm:text-2xl">Search any anime</h2>
+              <p className="mt-1 text-xs text-chrono-text-muted sm:text-sm">Find a franchise, then get the watch order that makes sense.</p>
+            </div>
+            <span className="hidden rounded-full border border-chrono-primary/25 bg-chrono-primary/10 px-3 py-1.5 text-[10px] font-bold text-violet-200 sm:inline-flex">10,000+ titles</span>
+          </div>
           <label htmlFor="chrono-search" className="sr-only">Search any anime title</label>
+          <div role="search" aria-label="Search for an anime watch order" className="rounded-2xl border border-chrono-primary/35 bg-chrono-surface/70 p-2 shadow-2xl shadow-chrono-primary/10 ring-1 ring-white/5">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-chrono-text-dim pointer-events-none" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-chrono-primary pointer-events-none" />
               <input
                 ref={inputRef}
                 id="chrono-search"
-                type="text"
+                type="search"
                 autoComplete="off"
                 spellCheck={false}
                 placeholder={OBSCURE_TITLES[placeholderIdx]}
@@ -713,7 +717,8 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
               role="combobox"
               aria-expanded={dropdownOpen}
               aria-controls={listboxId}
-              className="input-field w-full pl-12! pr-12! py-4! text-base sm:text-lg font-medium shadow-2xl shadow-black/40"
+              aria-label="Search any anime title"
+              className="input-field w-full pl-12! pr-12! py-4! text-base sm:text-lg font-semibold shadow-none placeholder:text-chrono-text-dim/80"
             />
             {isSearching && (
               <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-chrono-primary animate-spin" />
@@ -728,6 +733,8 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
               </button>
             )}
           </div>
+          </div>
+          <p className="mt-2 px-1 text-[11px] text-chrono-text-dim">Try a franchise name, even an obscure one. Select a result to customize your route.</p>
 
           {dropdownOpen && (results.length > 0 || isSearching) && (
             <ul id={listboxId} role="listbox" className="absolute top-[calc(100%+0.5rem)] left-0 right-0 glass-card rounded-2xl overflow-hidden shadow-2xl z-[70] max-h-96 overflow-y-auto p-1.5">
@@ -772,6 +779,9 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
           )}
         </div>
       )}
+
+      {/* Grounded Intelligence hero — supporting context follows the primary action. */}
+      {activeTab === "builder" && !selected && !finalData && <CinematicHero />}
 
       {/* Tab 2 Discover Stage with IMDb-Grade Filter controls */}
       {hasVisitedDiscover && (
