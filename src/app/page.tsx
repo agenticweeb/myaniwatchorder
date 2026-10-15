@@ -167,6 +167,11 @@ export default async function Page() {
                   This Season's Anime — Watch Orders
                 </Link>
               </li>
+              <li>
+                <Link href="/methodology" className="hover:text-chrono-primary transition-colors">
+                  How our watch orders are built
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

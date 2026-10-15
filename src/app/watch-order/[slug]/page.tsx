@@ -8,6 +8,8 @@ import { generateWatchOrderAction } from "@/app/actions";
 import FlowchartV2 from "@/components/FlowchartV2";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Compass } from "lucide-react";
+import { getEditorialGuide } from "@/lib/seo/editorial-guides";
+import { EditorialGuideSection } from "@/components/EditorialGuideSection";
 
 // ISR: page renders at build time (or first request), then re-renders
 // at most every 6 hours. Googlebot gets instant HTML from the cache.
@@ -52,6 +54,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
   const { slug } = await params;
   const franchise = getFranchiseBySlug(slug);
   if (!franchise) notFound();
+  const editorialGuide = getEditorialGuide(slug);
 
   const defaultPrefs = {
     timeBudget: "regular",
@@ -218,6 +221,15 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
           <FlowchartV2 data={result} timeBudget="regular" />
         </ErrorBoundary>
 
+        {editorialGuide && <EditorialGuideSection guide={editorialGuide} />}
+
+        <p className="mx-auto mt-10 max-w-3xl text-center text-xs leading-6 text-chrono-text-dim">
+          Learn how this guide is assembled from source data and validated routes in our{" "}
+          <Link href="/methodology" className="font-bold text-chrono-primary hover:underline">
+            watch-order methodology
+          </Link>.
+        </p>
+
         {/* Visible FAQ for LLM Ingestion */}
         <div className="max-w-3xl mx-auto mt-16 space-y-6">
           <h2 className="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
@@ -241,6 +253,14 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
               </p>
             </div>
           </div>
+          {editorialGuide?.related[0] && (
+            <p className="text-center text-xs text-chrono-text-dim">
+              Still comparing routes? Read the{" "}
+              <Link href={`/watch-order/${editorialGuide.related[0].slug}`} className="font-bold text-chrono-primary hover:underline">
+                {editorialGuide.related[0].label}
+              </Link>.
+            </p>
+          )}
         </div>
       </div>
     </main>
