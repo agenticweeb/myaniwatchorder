@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const franchise = getFranchiseBySlug(slug);
   if (!franchise) return {};
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://myaniwatchorder-zeta.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aniwatchorder.cc";
   const canonicalUrl = `${siteUrl}/watch-order/${franchise.slug}`;
 
   // OG card with cover art overlay — content-relevant image for Google's
@@ -113,7 +113,7 @@ export default async function WatchOrderPage({ params }: { params: Promise<{ slu
     }
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://myaniwatchorder-zeta.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://aniwatchorder.cc";
   const canonicalUrl = `${siteUrl}/watch-order/${franchise.slug}`;
 
   const faqSchema = {

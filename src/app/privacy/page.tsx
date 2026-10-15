@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
+  alternates: { canonical: "https://aniwatchorder.cc/privacy" },
   title: "Privacy Policy — MyAniWatchOrder",
   description: "What MyAniWatchOrder stores, what it doesn't, and the choices you have.",
 };

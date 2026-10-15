@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
+  alternates: { canonical: "https://aniwatchorder.cc/terms" },
   title: "Terms of Service — MyAniWatchOrder",
   description: "The rules for using MyAniWatchOrder, in plain language.",
 };

@@ -14,25 +14,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/`,
-      lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 1,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.8,
     },
     {
       url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
     {
       url: `${baseUrl}/terms`,
-      lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
@@ -41,7 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. The 20 Programmatic SEO Franchise Pages
   const franchisePages: MetadataRoute.Sitemap = SEO_FRANCHISES.map(franchise => ({
     url: `${baseUrl}/watch-order/${franchise.slug}`,
-    lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.9,
   }));
@@ -53,7 +48,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getPreviousSeasonSlug(),
   ].map(slug => ({
     url: `${baseUrl}/season/${slug}`,
-    lastModified: new Date(),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
