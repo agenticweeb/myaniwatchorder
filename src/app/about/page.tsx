@@ -71,6 +71,9 @@ export default function AboutPage() {
       </p>
 
       <div className="mt-12 text-center">
+        <Link href="/methodology" className="mr-3 inline-flex items-center gap-2 text-sm font-bold text-chrono-primary hover:underline">
+          Read the full methodology
+        </Link>
         <Link href="/" className="btn-primary inline-flex items-center gap-2">
           Generate Your Watch Order
         </Link>

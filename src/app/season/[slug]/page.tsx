@@ -9,6 +9,7 @@ import {
   getPreviousSeasonSlug,
 } from "@/lib/anilist/get-season-anime";
 import { SuggestionImage } from "@/components/SuggestionImage";
+import { SEO_FRANCHISES } from "@/lib/seo/franchises";
 
 export const revalidate = 86400;
 export const dynamicParams = true;
@@ -93,7 +94,9 @@ export default async function SeasonPage({ params }: Props) {
             {shows.map((show) => (
               <a
                 key={show.anilistId}
-                href={`/?q=${encodeURIComponent(show.title)}`}
+                href={SEO_FRANCHISES.find((franchise) => franchise.anilistId === show.anilistId)?.slug
+                  ? `/watch-order/${SEO_FRANCHISES.find((franchise) => franchise.anilistId === show.anilistId)?.slug}`
+                  : `/?q=${encodeURIComponent(show.title)}`}
                 className="glass-card rounded-2xl overflow-hidden text-left border border-chrono-border/30
                            hover:border-chrono-primary/50 transition-all group"
               >
