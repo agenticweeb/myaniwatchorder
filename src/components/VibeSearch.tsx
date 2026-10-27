@@ -28,8 +28,8 @@ export function VibeSearch({ onApply, interpretation }: VibeSearchProps) {
       <div className="flex items-start gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-chrono-primary/20 text-chrono-primary"><WandSparkles className="h-4 w-4" /></div>
         <div className="min-w-0 flex-1">
-          <h2 id="vibe-search-title" className="text-sm font-extrabold text-white">Describe the anime mood you want</h2>
-          <p className="mt-1 text-[11px] text-chrono-text-dim">Vibe Search turns plain language into transparent filters. You can adjust everything below.</p>
+          <h2 id="vibe-search-title" className="text-sm font-extrabold text-white">Describe what you want to watch</h2>
+          <p className="mt-1 text-[11px] text-chrono-text-dim">Vibe Search resolves references, verifies AniList metadata, and explains why each result fits.</p>
           <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={(event) => { event.preventDefault(); submit(); }}>
             <input value={value} onChange={(event) => setValue(event.target.value)} placeholder={EXAMPLES[0]} className="min-w-0 flex-1 rounded-xl border border-chrono-border/40 bg-black/20 px-3 py-2.5 text-xs text-white outline-none placeholder:text-chrono-text-dim focus:border-chrono-primary" aria-label="Describe the anime you want" />
             <button type="submit" className="rounded-xl bg-chrono-primary px-4 py-2.5 text-xs font-extrabold text-white transition-colors hover:bg-chrono-primary/90">Apply vibe</button>
