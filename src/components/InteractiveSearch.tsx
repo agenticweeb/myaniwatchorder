@@ -49,6 +49,7 @@ import { CinematicHero } from "@/components/CinematicHero";
 import { HomepageDiscovery } from "@/components/HomepageDiscovery";
 import { DiscoveryFeedback } from "@/components/DiscoveryFeedback";
 import { VibeSearch } from "@/components/VibeSearch";
+import { DiscoverCard } from "@/components/DiscoverCard";
 import type { DiscoverCardData } from "@/lib/discover/shelf-recipes";
 
 
@@ -216,6 +217,9 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
   const [selectedLang, setSelectedYearLang] = useState<string>("All");
   const [showFilters, setShowFilters] = useState(true);
   const [vibeInterpretation, setVibeInterpretation] = useState("");
+  const [vibeMatches, setVibeMatches] = useState<(DiscoverCardData & { vibeReasons?: string[] })[]>([]);
+  const [vibeLoading, setVibeLoading] = useState(false);
+  const [vibeError, setVibeError] = useState("");
 
   // Phase 2 — slop mutes (single source of truth; tag/genre split derived below)
   const [slopFilters, setSlopFilters] = useState<string[]>([]);
@@ -304,7 +308,28 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
     );
   };
 
+  const runGroundedVibeSearch = async (prompt: string) => {
+    setVibeLoading(true);
+    setVibeError("");
+    setVibeMatches([]);
+    try {
+      const response = await fetch(`/api/vibe-search?q=${encodeURIComponent(prompt)}`);
+      const payload = await response.json();
+      if (!response.ok || !payload.success) throw new Error(payload.error || "Vibe Search could not find grounded matches.");
+      setVibeMatches(payload.data || []);
+      const reference = payload.interpretation?.reference;
+      const count = payload.interpretation?.resultCount || 0;
+      setVibeInterpretation(`${reference ? `Matches ${reference}` : "Matches AniList metadata"} · ${count} grounded results`);
+    } catch (error) {
+      setVibeMatches([]);
+      setVibeError(error instanceof Error ? error.message : "Vibe Search is temporarily unavailable.");
+    } finally {
+      setVibeLoading(false);
+    }
+  };
+
   const handleVibeSearch = (prompt: string) => {
+    void runGroundedVibeSearch(prompt);
     const value = prompt.toLowerCase();
     const genres = new Set<string>();
     let interpretation = "Popular anime, with the advanced filters ready to refine further";
@@ -802,6 +827,22 @@ export function InteractiveSearch({ initialSuggestions, airingAnime = [] }: Inte
           )}
         >
           <VibeSearch onApply={handleVibeSearch} interpretation={vibeInterpretation} />
+
+          {(vibeLoading || vibeError || vibeMatches.length > 0) && (
+            <section className="rounded-2xl border border-chrono-primary/20 bg-chrono-primary/5 p-4 sm:p-5" aria-labelledby="grounded-vibe-results">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-chrono-primary">Grounded matches</p>
+                  <h3 id="grounded-vibe-results" className="mt-1 text-base font-black text-white">Results that actually follow your request</h3>
+                  <p className="mt-1 text-[11px] text-chrono-text-dim">Matched from AniList metadata and recommendations, not a popularity guess.</p>
+                </div>
+                {vibeLoading && <Loader2 className="mt-1 h-4 w-4 animate-spin text-chrono-primary" />}
+              </div>
+              {vibeError && <p className="mt-3 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-xs text-rose-200">{vibeError}</p>}
+              {!vibeLoading && !vibeError && vibeMatches.length === 0 && <p className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">No candidates met every constraint. Try relaxing one requirement instead of showing misleading near-matches.</p>}
+              {vibeMatches.length > 0 && <div className="mt-4 flex gap-3 overflow-x-auto pb-2">{vibeMatches.map((card) => <div key={card.anilistId} className="w-[140px] shrink-0 sm:w-[160px]"><DiscoverCard card={card} onSelect={handleSelectDiscoverCard} /><div className="mt-2 space-y-1">{card.vibeReasons?.slice(0, 2).map((reason) => <p key={reason} className="text-[10px] leading-snug text-chrono-text-dim">✓ {reason}</p>)}</div></div>)}</div>}
+            </section>
+          )}
 
           {/* Zone 1 — Curated shelves (identical for every visitor; ignore the filter bar) */}
           <DiscoverShelves onSelect={handleSelectDiscoverCard} />
